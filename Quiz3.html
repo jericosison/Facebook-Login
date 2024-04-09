@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Facebook Login Example</title>
+</head>
+<body>
+
+<!-- Facebook SDK -->
+<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
+
+<!-- Facebook Login Button -->
+<button onclick="loginWithFacebook()">Login with Facebook</button>
+
+<!-- Container to display user data -->
+<div id="userData"></div>
+
+<script>
+  // Initialize Facebook SDK
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '1589217168588176',
+      cookie     : true,
+      xfbml      : true,
+      version    : 'v13.0'
+    });
+      
+    FB.AppEvents.logPageView();   
+  };
+
+  // Load Facebook SDK asynchronously
+  (function(d, s, id){
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) {return;}
+    js = d.createElement(s); js.id = id;
+    js.src = "https://connect.facebook.net/en_US/sdk.js";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));
+
+  // Function to handle Facebook login
+  function loginWithFacebook() {
+    FB.login(function(response) {
+      if (response.authResponse) {
+        // Get user data
+        FB.api('/me', {fields: 'name,email,age_range,gender'}, function(userData) {
+          // Display user data
+          document.getElementById('userData').innerHTML = `
+            <p>Name: ${userData.name}</p>
+            <p>Email: ${userData.email}</p>
+            <p>Age Range: ${userData.age_range.min}-${userData.age_range.max}</p>
+            <p>Gender: ${userData.gender}</p>
+          `;
+        });
+      } else {
+        console.log('User cancelled login or did not fully authorize.');
+      }
+    }, {scope: 'email,user_age_range,user_gender'});
+  }
+</script>
+
+</body>
+</html>
