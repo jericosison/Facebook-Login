@@ -11,7 +11,7 @@
 <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
 
 <!-- Facebook Login Button -->
-<button onclick="loginWithFacebook()">Login with Facebook</button>
+<fb:login-button scope="public_profile,email" onlogin="checkLoginState();"></fb:login-button>
 
 <!-- Container to display user data -->
 <div id="userData"></div>
@@ -39,23 +39,27 @@
   }(document, 'script', 'facebook-jssdk'));
 
   // Function to handle Facebook login
-  function loginWithFacebook() {
-    FB.login(function(response) {
-      if (response.authResponse) {
-        // Get user data
-        FB.api('/me', {fields: 'name,email,age_range,gender'}, function(userData) {
-          // Display user data
-          document.getElementById('userData').innerHTML = `
-            <p>Name: ${userData.name}</p>
-            <p>Email: ${userData.email}</p>
-            <p>Age Range: ${userData.age_range.min}-${userData.age_range.max}</p>
-            <p>Gender: ${userData.gender}</p>
-          `;
-        });
-      } else {
-        console.log('User cancelled login or did not fully authorize.');
-      }
-    }, {scope: 'email,user_age_range,user_gender'});
+  function checkLoginState() {
+    FB.getLoginStatus(function(response) {
+      statusChangeCallback(response);
+    });
+  }
+
+  function statusChangeCallback(response) {
+    if (response.authResponse) {
+      // Get user data
+      FB.api('/me', {fields: 'name,email,age_range,gender'}, function(userData) {
+        // Display user data
+        document.getElementById('userData').innerHTML = `
+          <p>Name: ${userData.name}</p>
+          <p>Email: ${userData.email}</p>
+          <p>Age Range: ${userData.age_range.min}-${userData.age_range.max}</p>
+          <p>Gender: ${userData.gender}</p>
+        `;
+      });
+    } else {
+      console.log('User cancelled login or did not fully authorize.');
+    }
   }
 </script>
 
